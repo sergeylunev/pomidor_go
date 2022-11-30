@@ -4,6 +4,8 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
+	NEW_LINE = "NL"
+
 	// Identifiers + literals
 	IDENT  = "IDENT" // add, foobar, x, y, ...
 	INT    = "INT"   // 1343456
@@ -23,12 +25,17 @@ const (
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
+	COLON     = ":"
 	LPAREN    = "("
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
+	LBRACKET  = "["
+	RBRACKET  = "]"
 	// Keywords
 	FUNCTION = "FUNCTION"
+	ARRAY    = "ARRAY"
+	HASH     = "HASH"
 	LET      = "LET"
 	TRUE     = "TRUE"
 	FALSE    = "FALSE"
@@ -51,6 +58,8 @@ var keywords = map[string]TokenType{
 	"Если":    IF,
 	"Иначе":   ELSE,
 	"Вернуть": RETURN,
+	"Массив":  ARRAY,
+	"Пары":    HASH,
 }
 
 func LookupIdent(ident string) TokenType {
