@@ -13,9 +13,9 @@ func TestLetStatements(t *testing.T) {
 		expectedIdentifier string
 		expectedValue      interface{}
 	}{
-		{"let x = 5;", "x", 5},
-		{"let y = true;", "y", true},
-		{"let foobar = y;", "foobar", "y"},
+		{"x = 5\n", "x", 5},
+		{"y = Да\n", "y", true},
+		{"foobar = y\n", "foobar", "y"},
 	}
 
 	for _, tt := range tests {
@@ -46,9 +46,9 @@ func TestReturnStatements(t *testing.T) {
 		input         string
 		expectedValue interface{}
 	}{
-		{"return 5;", 5},
-		{"return true;", true},
-		{"return foobar;", "foobar"},
+		{"Вернуть 5\n", 5},
+		{"Вернуть Да\n", true},
+		{"Вернуть foobar\n", "foobar"},
 	}
 
 	for _, tt := range tests {
@@ -78,7 +78,7 @@ func TestReturnStatements(t *testing.T) {
 }
 
 func TestIdentifierExpression(t *testing.T) {
-	input := "foobar;"
+	input := "foobar\n"
 
 	l := lexer.New(input)
 	p := New(l)
@@ -109,7 +109,7 @@ func TestIdentifierExpression(t *testing.T) {
 }
 
 func TestIntegerLiteralExpression(t *testing.T) {
-	input := "5;"
+	input := "5\n"
 
 	l := lexer.New(input)
 	p := New(l)
@@ -679,10 +679,10 @@ func TestCallExpressionParameterParsing(t *testing.T) {
 }
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
-		return false
-	}
+	// if s.TokenLiteral() != "let" {
+	// 	t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
+	// 	return false
+	// }
 
 	letStmt, ok := s.(*ast.LetStatement)
 	if !ok {
@@ -801,7 +801,12 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 		return false
 	}
 
-	if bo.TokenLiteral() != fmt.Sprintf("%t", value) {
+	switch bo.TokenLiteral() {
+	case "Да":
+		break
+	case "Нет":
+		break
+	default:
 		t.Errorf("bo.TokenLiteral not %t. got=%s",
 			value, bo.TokenLiteral())
 		return false
