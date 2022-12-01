@@ -48,6 +48,7 @@ func TestReturnStatements(t *testing.T) {
 	}{
 		{"Вернуть 5\n", 5},
 		{"Вернуть Да\n", true},
+		{"Вернуть Нет;", true},
 		{"Вернуть foobar\n", "foobar"},
 	}
 
@@ -67,7 +68,7 @@ func TestReturnStatements(t *testing.T) {
 		if !ok {
 			t.Fatalf("stmt not *ast.returnStatement. got=%T", stmt)
 		}
-		if returnStmt.TokenLiteral() != "return" {
+		if returnStmt.TokenLiteral() != "Вернуть" {
 			t.Fatalf("returnStmt.TokenLiteral not 'return', got %q",
 				returnStmt.TokenLiteral())
 		}
@@ -149,8 +150,8 @@ func TestParsingPrefixExpressions(t *testing.T) {
 		{"-15;", "-", 15},
 		{"!foobar;", "!", "foobar"},
 		{"-foobar;", "-", "foobar"},
-		{"!true;", "!", true},
-		{"!false;", "!", false},
+		{"!Да;", "!", true},
+		{"!Нет;", "!", false},
 	}
 
 	for _, tt := range prefixTests {
@@ -207,9 +208,9 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"foobar < barfoo;", "foobar", "<", "barfoo"},
 		{"foobar == barfoo;", "foobar", "==", "barfoo"},
 		{"foobar != barfoo;", "foobar", "!=", "barfoo"},
-		{"true == true", true, "==", true},
-		{"true != false", true, "!=", false},
-		{"false == false", false, "==", false},
+		{"Да == Да", true, "==", true},
+		{"Да != Нет", true, "!=", false},
+		{"Нет == Нет", false, "==", false},
 	}
 
 	for _, tt := range infixTests {
@@ -290,20 +291,20 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
 		},
 		{
-			"true",
-			"true",
+			"Да",
+			"Да",
 		},
 		{
-			"false",
-			"false",
+			"Нет",
+			"Нет",
 		},
 		{
-			"3 > 5 == false",
-			"((3 > 5) == false)",
+			"3 > 5 == Нет",
+			"((3 > 5) == Нет)",
 		},
 		{
-			"3 < 5 == true",
-			"((3 < 5) == true)",
+			"3 < 5 == Да",
+			"((3 < 5) == Да)",
 		},
 		{
 			"1 + (2 + 3) + 4",
@@ -326,8 +327,8 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"(-(5 + 5))",
 		},
 		{
-			"!(true == true)",
-			"(!(true == true))",
+			"!(Да == Да)",
+			"(!(Да == Да))",
 		},
 		{
 			"a + add(b * c) + d",
@@ -341,14 +342,15 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			"add(a + b + c * d / f + g)",
 			"add((((a + b) + ((c * d) / f)) + g))",
 		},
-		{
-			"a * [1, 2, 3, 4][b * c] * d",
-			"((a * ([1, 2, 3, 4][(b * c)])) * d)",
-		},
-		{
-			"add(a * b[2], b[1], 2 * [1, 2][1])",
-			"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
-		},
+		// TODO: Сделать когда будет готова часть с массивами.
+		// {
+		// 	"a * [1, 2, 3, 4][b * c] * d",
+		// 	"((a * ([1, 2, 3, 4][(b * c)])) * d)",
+		// },
+		// {
+		// 	"add(a * b[2], b[1], 2 * [1, 2][1])",
+		// 	"add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))",
+		// },
 	}
 
 	for _, tt := range tests {

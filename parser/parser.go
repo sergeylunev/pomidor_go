@@ -120,7 +120,11 @@ func (p *Parser) ParseProgram() *ast.Program {
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.IDENT:
-		return p.parseLetStatement()
+		if p.peekTokenIs(token.ASSIGN) {
+			return p.parseLetStatement()
+		} else {
+			return p.parseExpressionStatement()
+		}
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
@@ -154,7 +158,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	stmt.ReturnValue = p.parseExpression(LOWEST)
 
-	if p.peekTokenIs(token.SEMICOLON) {
+	if p.peekTokenIs(token.SEMICOLON) || p.peekTokenIs(token.NEW_LINE) {
 		p.nextToken()
 	}
 
@@ -212,7 +216,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 	stmt.Expression = p.parseExpression(LOWEST)
 
-	if p.peekTokenIs(token.NEW_LINE) {
+	if p.peekTokenIs(token.SEMICOLON) || p.peekTokenIs(token.NEW_LINE) {
 		p.nextToken()
 	}
 
@@ -228,7 +232,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 	leftExp := prefix()
 
-	for !p.peekTokenIs(token.NEW_LINE) && precedence < p.peekPrecedence() {
+	for (!p.peekTokenIs(token.SEMICOLON) || !p.peekTokenIs(token.NEW_LINE)) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp

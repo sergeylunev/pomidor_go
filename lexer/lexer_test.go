@@ -13,6 +13,8 @@ func TestNextToken(t *testing.T) {
   x + y
 )
 
+вычитание = Функция(x, y) (Вернуть x - y;)
+
 результат = сложение(пять, десять)
 !-/*5
 5 < 10 > 5
@@ -59,6 +61,23 @@ func TestNextToken(t *testing.T) {
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
 		{token.NEW_LINE, "\n"},
+		{token.RPAREN, ")"},
+		{token.NEW_LINE, "\n"},
+		{token.NEW_LINE, "\n"},
+		{token.IDENT, "вычитание"},
+		{token.ASSIGN, "="},
+		{token.FUNCTION, "Функция"},
+		{token.LPAREN, "("},
+		{token.IDENT, "x"},
+		{token.COMMA, ","},
+		{token.IDENT, "y"},
+		{token.RPAREN, ")"},
+		{token.LPAREN, "("},
+		{token.RETURN, "Вернуть"},
+		{token.IDENT, "x"},
+		{token.MINUS, "-"},
+		{token.IDENT, "y"},
+		{token.SEMICOLON, ";"},
 		{token.RPAREN, ")"},
 		{token.NEW_LINE, "\n"},
 		{token.NEW_LINE, "\n"},
