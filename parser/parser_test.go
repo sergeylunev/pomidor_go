@@ -371,8 +371,8 @@ func TestBooleanExpression(t *testing.T) {
 		input           string
 		expectedBoolean bool
 	}{
-		{"true;", true},
-		{"false;", false},
+		{"Да;", true},
+		{"Нет\n", false},
 	}
 
 	for _, tt := range tests {
@@ -404,7 +404,7 @@ func TestBooleanExpression(t *testing.T) {
 }
 
 func TestIfExpression(t *testing.T) {
-	input := `if (x < y) { x }`
+	input := `Если (x < y) ( x )`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -453,7 +453,7 @@ func TestIfExpression(t *testing.T) {
 }
 
 func TestIfElseExpression(t *testing.T) {
-	input := `if (x < y) { x } else { y }`
+	input := `Если (x < y) ( x ) Иначе ( y )`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -512,7 +512,7 @@ func TestIfElseExpression(t *testing.T) {
 }
 
 func TestFunctionLiteralParsing(t *testing.T) {
-	input := `fn(x, y) { x + y; }`
+	input := `Функция(x, y) ( x + y; )`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -563,9 +563,9 @@ func TestFunctionParameterParsing(t *testing.T) {
 		input          string
 		expectedParams []string
 	}{
-		{input: "fn() {};", expectedParams: []string{}},
-		{input: "fn(x) {};", expectedParams: []string{"x"}},
-		{input: "fn(x, y, z) {};", expectedParams: []string{"x", "y", "z"}},
+		{input: "Функция() ();", expectedParams: []string{}},
+		{input: "Функция(x) ();", expectedParams: []string{"x"}},
+		{input: "Функция(x, y, z) ();", expectedParams: []string{"x", "y", "z"}},
 	}
 
 	for _, tt := range tests {
@@ -847,7 +847,7 @@ func TestStringLiteralExpression(t *testing.T) {
 }
 
 func TestParsingArrayLiterals(t *testing.T) {
-	input := "[1, 2 * 2, 3 + 3]"
+	input := "Массив(1, 2 * 2, 3 + 3)"
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
@@ -866,7 +866,7 @@ func TestParsingArrayLiterals(t *testing.T) {
 }
 
 func TestParsingIndexExpressions(t *testing.T) {
-	input := "myArray[1 + 1]"
+	input := "myArray:1 + 1:"
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()

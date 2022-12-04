@@ -64,7 +64,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerPrefix(token.ARRAY, p.parseArrayLiteral)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
@@ -320,7 +320,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		return nil
 	}
 
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
@@ -329,7 +329,7 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	if p.peekTokenIs(token.ELSE) {
 		p.nextToken()
 
-		if !p.expectPeek(token.LBRACE) {
+		if !p.expectPeek(token.LPAREN) {
 			return nil
 		}
 
@@ -345,7 +345,7 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 
 	p.nextToken()
 
-	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
+	for !p.curTokenIs(token.RPAREN) && !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
 			block.Statements = append(block.Statements, stmt)
@@ -364,7 +364,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 
 	lit.Parameters = p.parseFunctionParameters()
 
-	if !p.expectPeek(token.LBRACE) {
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
@@ -435,7 +435,9 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := &ast.ArrayLiteral{Token: p.curToken}
-	array.Elements = p.parseExpressionList(token.RBRACKET)
+	// Пропускаем токен, потому что открывающая скобка нам не нужна
+	p.nextToken()
+	array.Elements = p.parseExpressionList(token.RPAREN)
 
 	return array
 }
