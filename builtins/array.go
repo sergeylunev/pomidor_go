@@ -1,27 +1,19 @@
-package evaluator
+package builtins
 
 import (
 	"pomidor/object"
 )
 
-var builtins = map[string]*object.Builtin{
-	"len": &object.Builtin{
+var ArrayFunctions = map[string]*object.Builtin{
+	"Индекс": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1 {
-				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=%d", len(args), 2)
 			}
-
-			switch arg := args[0].(type) {
-			case *object.Array:
-				return &object.Integer{Value: int64(len(arg.Elements))}
-			case *object.String:
-				return &object.Integer{Value: int64(len(arg.Value))}
-			default:
-				return newError("argument to `len` not supported, got %s", args[0].Type())
-			}
+			return &object.Null{}
 		},
 	},
-	"first": &object.Builtin{
+	"Первый": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
@@ -35,10 +27,10 @@ var builtins = map[string]*object.Builtin{
 				return arr.Elements[0]
 			}
 
-			return NULL
+			return &object.Null{}
 		},
 	},
-	"last": &object.Builtin{
+	"Последний": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
@@ -53,7 +45,7 @@ var builtins = map[string]*object.Builtin{
 				return arr.Elements[length-1]
 			}
 
-			return NULL
+			return &object.Null{}
 		},
 	},
 	"rest": &object.Builtin{
@@ -73,10 +65,10 @@ var builtins = map[string]*object.Builtin{
 				return &object.Array{Elements: newElements}
 			}
 
-			return NULL
+			return &object.Null{}
 		},
 	},
-	"push": &object.Builtin{
+	"Добавить": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
 				return newError("wrong number of arguments. got=%d, want=2",

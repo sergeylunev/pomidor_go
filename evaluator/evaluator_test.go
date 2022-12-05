@@ -59,8 +59,8 @@ func TestEvalBooleanExpression(t *testing.T) {
 		input    string
 		expected bool
 	}{
-		{"true", true},
-		{"false", false},
+		{"Да", true},
+		{"Нет", false},
 		{"1 < 2", true},
 		{"1 > 2", false},
 		{"1 < 1", false},
@@ -69,15 +69,15 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
-		{"true == true", true},
-		{"false == false", true},
-		{"true == false", false},
-		{"true != false", true},
-		{"false != true", true},
-		{"(1 < 2) == true", true},
-		{"(1 < 2) == false", false},
-		{"(1 > 2) == true", false},
-		{"(1 > 2) == false", true},
+		{"Да == Да", true},
+		{"Нет == Нет", true},
+		{"Да == Нет", false},
+		{"Да != Нет", true},
+		{"Нет != Да", true},
+		{"(1 < 2) == Да", true},
+		{"(1 < 2) == Нет", false},
+		{"(1 > 2) == Да", false},
+		{"(1 > 2) == Нет", true},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -103,11 +103,11 @@ func TestBangOperator(t *testing.T) {
 		input    string
 		expected bool
 	}{
-		{"!true", false},
-		{"!false", true},
+		{"!Да", false},
+		{"!Нет", true},
 		{"!5", false},
-		{"!!true", true},
-		{"!!false", false},
+		{"!!Да", true},
+		{"!!Нет", false},
 		{"!!5", true},
 	}
 	for _, tt := range tests {
@@ -121,13 +121,13 @@ func TestIfElseExpressions(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{"if (true) { 10 }", 10},
-		{"if (false) { 10 }", nil},
-		{"if (1) { 10 }", 10},
-		{"if (1 < 2) { 10 }", 10},
-		{"if (1 > 2) { 10 }", nil},
-		{"if (1 > 2) { 10 } else { 20 }", 20},
-		{"if (1 < 2) { 10 } else { 20 }", 10},
+		{"Если (Да) ( 10 )", 10},
+		{"Если (Нет) ( 10 )", nil},
+		{"Если (1) ( 10 )", 10},
+		{"Если (1 < 2) ( 10 )", 10},
+		{"Если (1 > 2) ( 10 )", nil},
+		{"Если (1 > 2) ( 10 ) Иначе ( 20 )", 20},
+		{"Если (1 < 2) ( 10 ) Иначе ( 20 )", 10},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -152,17 +152,17 @@ func TestReturnStatements(t *testing.T) {
 		input    string
 		expected int64
 	}{
-		{"return 10;", 10},
-		{"return 10; 9;", 10},
-		{"return 2 * 5; 9;", 10},
-		{"9; return 2 * 5; 9;", 10},
+		{"Вернуть 10;", 10},
+		{"Вернуть 10\n 9\n", 10},
+		{"Вернуть 2 * 5; 9;", 10},
+		{"9; Вернуть 2 * 5; 9;", 10},
 		{
 			`
-			if (10 > 1) {
-				if (10 > 1) {
-					return 10;
+			Если (10 > 1) {
+				Если (10 > 1) {
+					Вернуть 10;
 				}
-				return 1;
+				Вернуть 1;
 			} `,
 			10,
 		},
@@ -179,37 +179,37 @@ func TestErrorHandling(t *testing.T) {
 		expectedMessage string
 	}{
 		{
-			"5 + true;",
+			"5 + Да;",
 			"type mismatch: INTEGER + BOOLEAN",
 		},
 		{
-			"5 + true; 5;",
+			"5 + Да; 5;",
 			"type mismatch: INTEGER + BOOLEAN",
 		},
 		{
-			"-true",
+			"-Да",
 			"unknown operator: -BOOLEAN",
 		},
 		{
-			"true + false;",
+			"Да + Нет;",
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
-			"5; true + false; 5",
+			"5; Да + Нет; 5",
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
-			"if (10 > 1) { true + false; }",
+			"Если (10 > 1) ( Да + Нет; )",
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			`
-			if (10 > 1) {
-				if (10 > 1) {
-					return true + false;
-				}
-				return 1;
-			} `,
+			Если (10 > 1) (
+				Если (10 > 1) (
+					Вернуть Да + Нет;
+				)
+				Вернуть 1;
+			) `,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
@@ -220,10 +220,10 @@ func TestErrorHandling(t *testing.T) {
 			`"Hello" - "World"`,
 			"unknown operator: STRING - STRING",
 		},
-		{
-			`{"name": "Monkey"}[fn(x) { x }];`,
-			"unusable as hash key: FUNCTION",
-		},
+		// {
+		// 	`{"name": "Monkey"}[fn(x) { x }];`,
+		// 	"unusable as hash key: FUNCTION",
+		// },
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -245,10 +245,10 @@ func TestLetStatements(t *testing.T) {
 		input    string
 		expected int64
 	}{
-		{"let a = 5; a;", 5},
-		{"let a = 5 * 5; a;", 25},
-		{"let a = 5; let b = a; b;", 5},
-		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+		{"a = 5; a;", 5},
+		{"a = 5 * 5; a;", 25},
+		{"a = 5; b = a; b;", 5},
+		{"a = 5; b = a; c = a + b + 5; c;", 15},
 	}
 	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
@@ -256,7 +256,7 @@ func TestLetStatements(t *testing.T) {
 }
 
 func TestFunctionObject(t *testing.T) {
-	input := "fn(x) { x + 2; };"
+	input := "Функция(x) ( x + 2; )\n"
 	evaluated := testEval(input)
 	fn, ok := evaluated.(*object.Function)
 	if !ok {
@@ -280,12 +280,12 @@ func TestFunctionApplication(t *testing.T) {
 		input    string
 		expected int64
 	}{
-		{"let identity = fn(x) { x; }; identity(5);", 5},
-		{"let identity = fn(x) { return x; }; identity(5);", 5},
-		{"let double = fn(x) { x * 2; }; double(5);", 10},
-		{"let add = fn(x, y) { x + y; }; add(5, 5);", 10},
-		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
-		{"fn(x) { x; }(5)", 5},
+		{"identity = Функция(x) ( x )\n identity(5);", 5},
+		{"identity = Функция(x) ( Вернуть x; ); identity(5);", 5},
+		{"double = Функция(x) ( x * 2; ); double(5);", 10},
+		{"add = Функция(x, y) ( x + y; ); add(5, 5);", 10},
+		{"add = Функция(x, y) ( x + y; ); add(5 + 5, add(5, 5));", 20},
+		{"Функция(x) ( x )(5)", 5},
 	}
 	for _, tt := range tests {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
@@ -294,11 +294,11 @@ func TestFunctionApplication(t *testing.T) {
 
 func TestClosures(t *testing.T) {
 	input := `
-	let newAdder = fn(x) {
-		fn(y) { x + y };
-	};
-	let addTwo = newAdder(2);
-	addTwo(2);`
+	newAdder = Функция(x) (
+		Функция(y) ( x + y )
+	)
+	addTwo = newAdder(2)
+	addTwo(2)`
 	testIntegerObject(t, testEval(input), 4)
 }
 
@@ -331,11 +331,11 @@ func TestBuiltinFunctions(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{`len("")`, 0},
-		{`len("four")`, 4},
-		{`len("hello world")`, 11},
-		{`len(1)`, "argument to `len` not supported, got INTEGER"},
-		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
+		{`Длина("")`, 0},
+		{`Длина("four")`, 4},
+		{`Длина("hello world")`, 11},
+		{`Длина(1)`, "argument to `len` not supported, got INTEGER"},
+		{`Длина("one", "two")`, "wrong number of arguments. got=2, want=1"},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -358,7 +358,7 @@ func TestBuiltinFunctions(t *testing.T) {
 }
 
 func TestArrayLiterals(t *testing.T) {
-	input := "[1, 2 * 2, 3 + 3]"
+	input := "Массив(1, 2 * 2, 3 + 3)"
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Array)
 	if !ok {
