@@ -36,6 +36,7 @@ const (
 	FUNCTION = "FUNCTION"
 	ARRAY    = "ARRAY"
 	HASH     = "HASH"
+	INDEX    = "INDEX"
 	LET      = "LET"
 	TRUE     = "TRUE"
 	FALSE    = "FALSE"
@@ -60,6 +61,7 @@ var keywords = map[string]TokenType{
 	"Вернуть": RETURN,
 	"Массив":  ARRAY,
 	"Пары":    HASH,
+	"Индекс":  INDEX,
 }
 
 func LookupIdent(ident string) TokenType {

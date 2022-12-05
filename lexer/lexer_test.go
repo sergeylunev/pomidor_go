@@ -30,7 +30,7 @@ func TestNextToken(t *testing.T) {
 
 "foobar"
 "foo bar"
-Массив(1, 2)
+Массив(1, 2):1
 Пары("foo":"bar", "bar":"foo")
 `
 
@@ -143,6 +143,8 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.INT, "2"},
 		{token.RPAREN, ")"},
+		{token.COLON, ":"},
+		{token.INT, "1"},
 		{token.NEW_LINE, "\n"},
 		{token.HASH, "Пары"},
 		{token.LPAREN, "("},
