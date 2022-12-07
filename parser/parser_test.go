@@ -866,7 +866,7 @@ func TestParsingArrayLiterals(t *testing.T) {
 }
 
 func TestParsingIndexExpressions(t *testing.T) {
-	input := "myArray:1"
+	input := "myArray:(1)"
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()

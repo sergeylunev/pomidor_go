@@ -378,46 +378,46 @@ func TestArrayIndexExpressions(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		// {
-		// 	"Массив(1, 2, 3):0",
-		// 	1,
-		// },
-		// {
-		// 	"Массив(1, 2, 3):1",
-		// 	2,
-		// },
-		// {
-		// 	"Массив(1, 2, 3):2",
-		// 	3,
-		// },
-		// {
-		// 	"i = 0; Массив(1):i;",
-		// 	1,
-		// },
-		// // {
-		// // 	"[1, 2, 3][1 + 1];",
-		// // 	3,
-		// // },
-		// {
-		// 	"myArray = Массив(1, 2, 3); myArray:2;",
-		// 	3,
-		// },
 		{
-			"myArray = Массив(1, 2, 3); myArray:0 + myArray:1 + myArray:2;",
+			"Массив(1, 2, 3):(0)",
+			1,
+		},
+		{
+			"Массив(1, 2, 3):(1)",
+			2,
+		},
+		{
+			"Массив(1, 2, 3):(2)",
+			3,
+		},
+		{
+			"i = 0; Массив(1):(i);",
+			1,
+		},
+		{
+			"Массив(1, 2, 3):(1 + 1);",
+			3,
+		},
+		{
+			"myArray = Массив(1, 2, 3); myArray:(2);",
+			3,
+		},
+		{
+			"myArray = Массив(1, 2, 3); myArray:(0) + myArray:(1) + myArray:(2);",
 			6,
 		},
-		// {
-		// 	"myArray = Массив(1, 2, 3); i = myArray:0; myArray:i",
-		// 	2,
-		// },
-		// {
-		// 	"Массив(1, 2, 3):3",
-		// 	nil,
-		// },
-		// {
-		// 	"Массив(1, 2, 3):-1",
-		// 	nil,
-		// },
+		{
+			"myArray = Массив(1, 2, 3); i = myArray:(0); myArray:(i)",
+			2,
+		},
+		{
+			"Массив(1, 2, 3):(3)",
+			nil,
+		},
+		{
+			"Массив(1, 2, 3):(-1)",
+			nil,
+		},
 	}
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
@@ -431,15 +431,15 @@ func TestArrayIndexExpressions(t *testing.T) {
 }
 
 func TestHashLiterals(t *testing.T) {
-	input := `let two = "two";
-	{
+	input := `two = "two";
+	Пары(
 	"one": 10 - 9,
 	two: 1 + 1,
-	"thr" + "ee": 6 / 2,
+	"three": 6 / 2,
 	4: 4,
-	true: 5,
-	false: 6
-	}`
+	Да: 5,
+	Нет: 6
+	)`
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Hash)
 	if !ok {
@@ -471,31 +471,31 @@ func TestHashIndexExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{
-			`{"foo": 5}["foo"]`,
+			`Пары("foo": 5):("foo")`,
 			5,
 		},
 		{
-			`{"foo": 5}["bar"]`,
+			`Пары("foo": 5):("bar")`,
 			nil,
 		},
 		{
-			`let key = "foo"; {"foo": 5}[key]`,
+			`key = "foo"; Пары("foo": 5):(key)`,
 			5,
 		},
 		{
-			`{}["foo"]`,
+			`Пары():("foo")`,
 			nil,
 		},
 		{
-			`{5: 5}[5]`,
+			`Пары(5: 5):(5)`,
 			5,
 		},
 		{
-			`{true: 5}[true]`,
+			`Пары(Да: 5):(Да)`,
 			5,
 		},
 		{
-			`{false: 5}[false]`,
+			`Пары(Нет: 5):(Нет)`,
 			5,
 		},
 	}

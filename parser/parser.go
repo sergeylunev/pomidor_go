@@ -46,7 +46,8 @@ type Parser struct {
 	curToken  token.Token
 	peekToken token.Token
 
-	parsingHashKey bool
+	parsingHashKey        bool
+	parserInsideExpresion bool
 
 	prefixParseFns map[token.TokenType]prefixParseFn
 	infixParseFns  map[token.TokenType]infixParseFn
@@ -235,7 +236,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 	leftExp := prefix()
 
-	for (!p.peekTokenIs(token.SEMICOLON) || !p.peekTokenIs(token.NEW_LINE)) && precedence < p.peekPrecedence() {
+	for (!p.peekTokenIs(token.SEMICOLON) || (!p.peekTokenIs(token.NEW_LINE) && !p.parserInsideExpresion)) && precedence < p.peekPrecedence() {
 		if p.parsingHashKey {
 			return leftExp
 		}
@@ -478,13 +479,20 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
 
 	p.nextToken()
-	exp.Index = p.parseExpression(LOWEST)
-	p.nextToken()
+	exp.Index = p.parseGroupedExpression()
 
 	return exp
 }
 
 func (p *Parser) parseHashLiteral() ast.Expression {
+	p.parserInsideExpresion = true
+	p.l.SkipNewLine(true)
+
+	defer func() {
+		p.parserInsideExpresion = false
+		p.l.SkipNewLine(false)
+	}()
+
 	hash := &ast.HashLiteral{Token: p.curToken}
 	hash.Pairs = make(map[ast.Expression]ast.Expression)
 	p.nextToken()
