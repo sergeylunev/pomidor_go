@@ -7,17 +7,12 @@ type Lexer struct {
 	position     int
 	readPosition int
 	ch           rune
-	skipNewLine  bool
 }
 
 func New(input string) *Lexer {
 	l := &Lexer{input: []rune(input)}
 	l.readChar()
 	return l
-}
-
-func (l *Lexer) SkipNewLine(v bool) {
-	l.skipNewLine = v
 }
 
 func (l *Lexer) NextToken() token.Token {
@@ -104,14 +99,8 @@ func newToken(tokenType token.TokenType, ch rune) token.Token {
 }
 
 func (l *Lexer) skipWhitespace() {
-	if l.skipNewLine {
-		for l.ch == ' ' || l.ch == '\t' || l.ch == '\r' || l.ch == '\n' {
-			l.readChar()
-		}
-	} else {
-		for l.ch == ' ' || l.ch == '\t' || l.ch == '\r' {
-			l.readChar()
-		}
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\r' || l.ch == '\n' {
+		l.readChar()
 	}
 }
 

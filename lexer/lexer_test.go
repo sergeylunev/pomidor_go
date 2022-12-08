@@ -6,32 +6,32 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `пять = 5
-десять = 10
+	input := `пять = 5;
+десять = 10;
 
 сложение = Функция(x, y) (
-  x + y
+  x + y;
 )
 
-вычитание = Функция(x, y) (Вернуть x - y;)
+вычитание = Функция(x, y) (Вернуть x - y);
 
-результат = сложение(пять, десять)
-!-/*5
-5 < 10 > 5
+результат = сложение(пять, десять);
+!-/*5;
+5 < 10 > 5;
 
 Если (5 < 10) (
-	Вернуть Да
+	Вернуть Да;
 ) Иначе (
-	Вернуть Нет
+	Вернуть Нет;
 )
 
-10 == 10
-10 != 9
+10 == 10;
+10 != 9;
 
-"foobar"
-"foo bar"
-Массив(1, 2):1
-Пары("foo":"bar", "bar":"foo")
+"foobar";
+"foo bar";
+Массив(1, 2):(1);
+Пары("foo":"bar", "bar":"foo");
 `
 
 	tests := []struct {
@@ -41,12 +41,11 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "пять"},
 		{token.ASSIGN, "="},
 		{token.INT, "5"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.IDENT, "десять"},
 		{token.ASSIGN, "="},
 		{token.INT, "10"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.IDENT, "сложение"},
 		{token.ASSIGN, "="},
 		{token.FUNCTION, "Функция"},
@@ -56,14 +55,11 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "y"},
 		{token.RPAREN, ")"},
 		{token.LPAREN, "("},
-		{token.NEW_LINE, "\n"},
 		{token.IDENT, "x"},
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.RPAREN, ")"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
 		{token.IDENT, "вычитание"},
 		{token.ASSIGN, "="},
 		{token.FUNCTION, "Функция"},
@@ -77,10 +73,8 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "x"},
 		{token.MINUS, "-"},
 		{token.IDENT, "y"},
-		{token.SEMICOLON, ";"},
 		{token.RPAREN, ")"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.IDENT, "результат"},
 		{token.ASSIGN, "="},
 		{token.IDENT, "сложение"},
@@ -89,20 +83,19 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "десять"},
 		{token.RPAREN, ")"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.BANG, "!"},
 		{token.MINUS, "-"},
 		{token.SLASH, "/"},
 		{token.ASTERISK, "*"},
 		{token.INT, "5"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.INT, "5"},
 		{token.LT, "<"},
 		{token.INT, "10"},
 		{token.GT, ">"},
 		{token.INT, "5"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.IF, "Если"},
 		{token.LPAREN, "("},
 		{token.INT, "5"},
@@ -110,33 +103,28 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "10"},
 		{token.RPAREN, ")"},
 		{token.LPAREN, "("},
-		{token.NEW_LINE, "\n"},
 		{token.RETURN, "Вернуть"},
 		{token.TRUE, "Да"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.RPAREN, ")"},
 		{token.ELSE, "Иначе"},
 		{token.LPAREN, "("},
-		{token.NEW_LINE, "\n"},
 		{token.RETURN, "Вернуть"},
 		{token.FALSE, "Нет"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.RPAREN, ")"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
 		{token.INT, "10"},
 		{token.EQ, "=="},
 		{token.INT, "10"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.INT, "10"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
-		{token.NEW_LINE, "\n"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.STRING, "foobar"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.STRING, "foo bar"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.ARRAY, "Массив"},
 		{token.LPAREN, "("},
 		{token.INT, "1"},
@@ -144,8 +132,10 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "2"},
 		{token.RPAREN, ")"},
 		{token.COLON, ":"},
+		{token.LPAREN, "("},
 		{token.INT, "1"},
-		{token.NEW_LINE, "\n"},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
 		{token.HASH, "Пары"},
 		{token.LPAREN, "("},
 		{token.STRING, "foo"},
@@ -156,7 +146,7 @@ func TestNextToken(t *testing.T) {
 		{token.COLON, ":"},
 		{token.STRING, "foo"},
 		{token.RPAREN, ")"},
-		{token.NEW_LINE, "\n"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 

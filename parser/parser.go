@@ -486,11 +486,9 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 
 func (p *Parser) parseHashLiteral() ast.Expression {
 	p.parserInsideExpresion = true
-	p.l.SkipNewLine(true)
 
 	defer func() {
 		p.parserInsideExpresion = false
-		p.l.SkipNewLine(false)
 	}()
 
 	hash := &ast.HashLiteral{Token: p.curToken}

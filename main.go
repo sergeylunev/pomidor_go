@@ -1,18 +1,30 @@
 package main
 
 import (
-	"fmt"
 	"os"
-	"os/user"
+	"pomidor/pl"
 	"pomidor/repl"
 )
 
 func main() {
-	user, err := user.Current()
+	args := os.Args[1:]
+
+	if len(args) >= 1 {
+		fromFile(args[0])
+	} else {
+		startRepl()
+	}
+}
+
+func fromFile(path string) {
+	data, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Hello %s! This is Monkey PL!\n", user.Username)
-	fmt.Printf("Feel free to type commands\n")
+
+	pl.Run(string(data), os.Stdout)
+}
+
+func startRepl() {
 	repl.Start(os.Stdin, os.Stdout)
 }
