@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-set -xeuo pipefail
 
 expected='3'
 result=$(go run ../main.go ./sum.pom)
